@@ -1,6 +1,6 @@
 import redis
 
-r = redis.StrictRedis(host="35.224.255.11", port=6379, db=0)
+r = redis.StrictRedis(host="35.225.229.66", port=6379, db=0)
 #print "Loading entries in the Redis DB\n"
 #f = open('female-names-2.txt',"r")
 #for line in f:
