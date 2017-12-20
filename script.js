@@ -47,10 +47,10 @@
   searchElement.addEventListener('keyup', function(e) {
     var divs = results.getElementsByTagName('div');
 
-    if(e.keycode == 38 && selectedResult > -1){
+    if(e.keycode == 38 && selectedResult >-1){
       divs[selectedResult--].className = '';
 
-      if(selectedResult > -1){
+      if(selectedResult >-1){
         divs[selectedResult--].className = 'result_focus';
       }
     }
