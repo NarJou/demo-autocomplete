@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="">
+    <meta name="author" content="">
+
     <title> Demo - best buy autocomplete </title>
-    <link rel="stylesheet" href="styles/main.css"/>
-  </head>
+</head>
 
-  <body>
-    <input id="search" type="text" autocomplete="off"/>
-    <div id="results"></div>
-    <script src="script.js"></script>   
-
-  </body>
+    <body>
+        <div id="search">
+            {% include "search.html" %}
+        </div>
+        <div id="result">
+            {% include "list.html" %}
+        </div>
+    </body>
 </html>
