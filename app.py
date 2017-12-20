@@ -1,16 +1,31 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from flask import Flask,render_template,jsonify,json,request
-from fabric.api import *
 
 application = Flask(__name__)
 
-client = MongoClient('0.0.0.0:27017')
-db = client.products
+client = MongoClient('35.224.255.11:27017')
+db = client.test.products
+
+def getProduct(key):
+    try:
+        productObject = db.find_one({'name':key})
+        productDict = {
+            'name':productObject['name'],
+            'model':productObject['model'],
+            'sku':productObject['sku'],
+            'type':productObject['type'],
+            'price':productObject['price']
+            }
+        return productDict
+    except Exception, e:
+        return str(e)
 
 @application.route('/')
 def showProduct():
-    return render_template('list.html')
+    STR = "Duracell - AAA Batteries (4-Pack)" #FIXME
+    product = getProduct(STR) #FIXME
+    return render_template('index.html', product=product)
 
 if __name__ == "__main__":
     application.run(host='0.0.0.0')
