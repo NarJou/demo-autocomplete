@@ -1,3 +1,4 @@
+import redis
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from flask import Flask,render_template,jsonify,json,request,redirect,url_for
@@ -6,6 +7,8 @@ application = Flask(__name__)
 
 client = MongoClient('35.224.255.11:27017')
 db = client.test.products
+
+r = redis.StrictRedis(host="10.128.0.2", port=6379, db=0)
 
 def getProduct(key):
     try:
@@ -20,7 +23,7 @@ def getProduct(key):
         return productDict
     except Exception, e:
         return str(e)
-    
+
 
 @application.route('/search', methods=['GET', 'POST'])
 def search(): #FIXME
@@ -33,16 +36,36 @@ def search(): #FIXME
         return redirect(url_for('search_results', query=query))
     else:
         return redirect(url_for('showProduct'))
-
-
+#TODO
+# /!\ catch the case where string query (prefix) do not exist on redis
 @application.route('/product/<query>', defaults={'page': 1})
 @application.route('/product/<query>/page-<int:page>')
 def search_results(page,query): #FIXME
     print "SEARCH_RESULTS_QUERY-->"+query
+    count = 50
+    results = []
+    rangelen = 50 # This is not random, try to get replies < MTU size
+    start = r.zrank('names',query)
+    print "ZRANK -->"
+    print start
+    if not start:
+         return []
+    while (len(results) != count):
+         range = r.zrange('names',start,start+rangelen-1)
+         start += rangelen
+         if not range or len(range) == 0:
+             break
+         for entry in range:
+             minlen = min(len(entry),len(query))
+             if entry[0:minlen] != query[0:minlen]:
+                count = len(results)
+                break
+             if entry[-1] == "*" and len(results) != count:
+                results.append(entry[0:-1])
 
     STR = "Amazon - Fire TV Stick" #FIXME
     product = getProduct(STR) #FIXME
-    return render_template('index.html', product=product)
+    return render_template('index.html', product=product, results=results)
 
 
 @application.route('/', methods=['GET', 'POST'])
